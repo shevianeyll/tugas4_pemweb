@@ -7,6 +7,26 @@ if (!isset($_SESSION['user_email'])) {
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $_SESSION['form_data'] = $_POST;
+    
+     // Menentukan folder penyimpanan
+     $uploadDir = "img/";
+     if (!file_exists($uploadDir)) {
+         mkdir($uploadDir, 0777, true); // Buat folder jika belum ada
+     }
+ 
+     $uploadedFiles = [];
+     foreach ($_FILES['photos']['name'] as $key => $name) {
+         if ($_FILES['photos']['error'][$key] == 0) {
+             $tmpName = $_FILES['photos']['tmp_name'][$key];
+             $filePath = $uploadDir . time() . "_" . basename($name);
+             if (move_uploaded_file($tmpName, $filePath)) {
+                 $uploadedFiles[] = $filePath;
+             }
+         }
+     }
+
+     $_SESSION['uploaded_photos'] = $uploadedFiles;
+
     header("Location: CV.php");
     exit();
 }
@@ -126,7 +146,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <body>
     <div class="box" id="Form">
         <h1>Form Identity</h1>
-        <form method="POST">
+        <form method="POST" enctype="multipart/form-data">
             <div class="form_align">
                 <div class="form_left">
                     <h3>About me</h3>
@@ -165,6 +185,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <input type="text" name="language[]" <?= $i == 1 ? "required" : "" ?>>
                             <br>
                         <?php endfor; ?>
+                    </div>
+                    <h3>Upload Photo</h3>
+                    <div class="input-group">
+                        <!-- <form method="POST" enctype="multipart/form-data"> -->
+                            <label>Upload Photos:</label>
+                            <input type="file" name="photos[]" accept="image/*" multiple>
+                            <br>
+                            <!-- <button type="submit">Submit</button> -->
+                        <!-- </form> -->
                     </div>
                 </div>
 
@@ -209,5 +238,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </form>
     </div>
 </body>
-
 </html>
