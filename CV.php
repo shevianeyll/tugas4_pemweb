@@ -5,6 +5,8 @@ if (!isset($_SESSION['form_data'])) {
     exit();
 }
 
+$uploadedPhotos = $_SESSION['uploaded_photos'] ?? [];
+
 $data = $_SESSION['form_data'];
 
 function formatMonthYear($date)
@@ -71,7 +73,13 @@ function formatMonthYear($date)
         .box_cv .header {
             position: relative;
             display: grid;
-            grid-template-columns: 1fr;
+            grid-template-columns: 1fr 2fr;
+        }
+
+        .box_cv .header .image{
+            position: relative;
+            padding: 40px;
+            background-color: #000627;
         }
 
         .box_cv .header .name {
@@ -79,6 +87,12 @@ function formatMonthYear($date)
             color: #ffffff;
             padding-top: 35px;
             padding-left: 35px;
+        }
+
+        .box_cv .header img{
+            width: 70%;
+            border-radius: 50%;
+            border: 5px solid white;
         }
 
         .name span {
@@ -131,6 +145,15 @@ function formatMonthYear($date)
 <body>
     <div class="box_cv" id="Main">
         <div class="header">
+            <div class="image" align="center">
+            <?php if (!empty($uploadedPhotos)): ?>
+                <?php foreach ($uploadedPhotos as $photo): ?>
+                    <img src="<?= htmlspecialchars($photo) ?>" alt="Uploaded Photo">
+                <?php endforeach; ?>
+            <?php else: ?>
+                <p>No photos uploaded.</p>
+            <?php endif; ?>
+            </div>
             <div class="name">
                 <span>
                     <h2><?php echo htmlspecialchars($data['name']); ?></h2>
@@ -205,5 +228,4 @@ function formatMonthYear($date)
         </div>
     </div>
 </body>
-
 </html>
